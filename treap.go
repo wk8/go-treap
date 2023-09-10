@@ -221,3 +221,20 @@ func (n *TreapNode[T]) rotateLeft() {
 		leftChild.parent = n.parent
 	}
 }
+
+// TODO wkpo doc + return type?? + TESTS!!
+// RemoveValue removes the given value, if found.
+// Returns the node that was removed; or nil if that value
+// wasn't in the treap.
+func (t *Treap[T]) RemoveValue(value T) *TreapNode[T] {
+	// TODO wkpo next!! requires a simple get?? maybe one that calls Neighbors, but eh
+	return nil
+}
+
+// TODO wkpo doc + return type??
+// TODO wkpo what happens if node not in treap?? + TESTS!!
+// RemoveNode removes the given node from the treap.
+// Undefined behavior if node isn't actually part of this treap!
+func (t *Treap[T]) RemoveNode(node *TreapNode[T]) {
+	// TODO wkpo next
+}

@@ -34,6 +34,8 @@ type testCase struct {
 	nVals int
 	// defaults to 10000 - range will be [-rangeVals, rangeVals] both inclusive
 	rangeVals int
+	// defaults to min(nVals, 100)
+	nDeletes int
 }
 
 func (tc *testCase) applyDefaults() {
@@ -77,14 +79,42 @@ func (tc *testCase) run(t *testing.T) {
 
 	sort.Ints(vals)
 
+	testBasicReadOperations(t, treap, vals)
+
+	// now for deletes
+	nDeletes := tc.nDeletes
+	if nDeletes <= 0 {
+		nDeletes = min(tc.nVals, 150)
+	}
+
+	// TODO wkpo handle the case where i < nDeletes but nothing left to delete?
+	for i := 0; i < nDeletes; i++ {
+
+	}
+}
+
+// TODO wkpo remove!!
+func TestWkpo(t *testing.T) {
+	if false {
+		// changes every time as expected, no need to seed
+		assert.Equal(t, "wkpo", rand.Intn(100))
+	}
+}
+
+// vals should be the ordered list of values contained in the treap
+func testBasicReadOperations(t *testing.T, treap *Treap[*val], vals []int) {
+	assertTreapWellFormed(t, treap)
+
+	nVals := len(vals)
+
 	require.Equal(t, vals[0], treap.Min().Value.i)
-	require.Equal(t, vals[tc.nVals-1], treap.Max().Value.i)
+	require.Equal(t, vals[nVals-1], treap.Max().Value.i)
 
 	// successors
 	current := treap.Min()
-	for i := 0; i < tc.nVals; {
+	for i := 0; i < nVals; {
 		j := 1
-		for ; i+j < tc.nVals && vals[i+j] == vals[i]; j++ {
+		for ; i+j < nVals && vals[i+j] == vals[i]; j++ {
 		}
 
 		require.Equal(t, vals[i], current.Value.i)
@@ -97,7 +127,7 @@ func (tc *testCase) run(t *testing.T) {
 
 	// predecessors
 	current = treap.Max()
-	for i := tc.nVals - 1; i >= 0; {
+	for i := nVals - 1; i >= 0; {
 		j := 1
 		for ; i-j >= 0 && vals[i-j] == vals[i]; j++ {
 		}
@@ -112,9 +142,9 @@ func (tc *testCase) run(t *testing.T) {
 
 	// LeastGTE/GreatestLTE
 	var previous *TreapNode[*val]
-	for i := 0; i < tc.nVals; {
+	for i := 0; i < nVals; {
 		j := 1
-		for ; i+j < tc.nVals && vals[i+j] == vals[i]; j++ {
+		for ; i+j < nVals && vals[i+j] == vals[i]; j++ {
 		}
 
 		v := vals[i]
@@ -138,7 +168,7 @@ func (tc *testCase) run(t *testing.T) {
 		i += j
 		previous = current
 	}
-	biggerThanAll := &val{i: vals[tc.nVals-1] + 1}
+	biggerThanAll := &val{i: vals[nVals-1] + 1}
 	require.Equal(t, previous, treap.GreatestLTE(biggerThanAll))
 	require.Nil(t, treap.LeastGTE(biggerThanAll))
 }
